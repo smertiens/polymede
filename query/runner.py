@@ -3,6 +3,7 @@ import re
 from .tokenizer import Tokenizer
 from .parser import Parser
 from .ast import *
+from .jsonpath import JSONPath
 
 class RuntimeError(Exception):
     pass
@@ -47,34 +48,18 @@ class Runtime:
             result = self._load(ast.command.src, ast.command.format)
         
         elif isinstance(ast.command, FindCommand):
-            result = self._find(ast.command.range, ast.command.level, ast.command.selector)
+            result = self._find(ast.command.selector)
+
         ret = {'result': result}
 
         return ret
 
-    def _find(self, range, level, selector):
+    def _find(self, selector):
         filtered = None
         result = None
 
-        if selector is None:
-            filtered = self._get_data()
-
-        print(filtered)
-
-        if level == 'nested':
-            pass
-            
-        if len(filtered) == 0:
-            result = {}
-
-        if range == 'first':
-            result = filtered[0]
-        elif range == 'last':
-            result = filtered[len(filtered) - 1]
-        elif range == 'all':
-            result = filtered
-        
-        return result
+        jp = JSONPath(selector, self._data)
+        return jp.get_result()
 
     def _load(self, src, format = 'auto'):
 

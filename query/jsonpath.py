@@ -44,6 +44,7 @@ class JSONPath:
                 # unpack expression
                 item = par_match.group(1)
                 
+                # Range match (x-y)
                 range_match = self.re_range.match(item)
                 if range_match:
                     start = range_match.group(1)
@@ -70,11 +71,22 @@ class JSONPath:
                         if res is not None:
                             result.append(res)
 
+                
+                else:
+                    # try again to match as literal key (without parentheses)
+                    items[0] = item # overwrite with the same item without parentheses
+                    result = self._walk_data(items, data)
+                    
+
                 return result
             
             else:
                 # treat as literal key
-                if item in data:
+                if type(data) == list and item.isnumeric():
+                    item = int(item)
+                    return self._walk_data(items[1:], data[item])
+
+                elif item in data:
                     return self._walk_data(items[1:], data[item])
                 
                 else:

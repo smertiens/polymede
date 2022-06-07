@@ -44,8 +44,6 @@ class LoadCommand(AST):
 
 class FindCommand(AST):
 
-    def __init__(self, range, level, selector):
-        self.range = range
-        self.level = level
+    def __init__(self, selector):
         self.selector = selector
 

@@ -50,3 +50,14 @@ def test_range():
     with pytest.raises(PathError):
         jp = JSONPath('test.(2-something)', {'test': [12, 13, 14, 'foo']})
         jp.get_result()
+
+def test_numeric_listindex():
+
+    cases = [
+        ('demo.(2)', {'demo': ['a', 'b', 'c']}, 'c'),
+        ('demo.(0)', {'demo': ['a', 'b', 'c']}, 'a'),
+    ]
+
+    for case in cases:
+        jp = JSONPath(case[0], case[1])
+        assert jp.get_result() == case[2]

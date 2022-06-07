@@ -49,31 +49,10 @@ class Parser:
 
     def _parse_command_find(self):
         self._advance()
-        range = None
-        level = 'root'
-        selector = None
-
-        if self._next_token().type == R_ALL:
-            range = 'all'
-        elif self._next_token().type == R_FIRST:
-            range = 'first'
-        elif self._next_token().type == R_LAST:
-            range = 'last'
-        else:
-            raise ParserError('Expected "all", "first" or "last"')
+        self._assert(STRING)
+        selector = self._next_token().value
         
-        self._advance()
-
-        if not self._is_eoq() and not self._next_token().type == R_WHERE:
-            if self._next_token().type == R_OF:
-                self._advance()
-                level = 'nested'
-                
-            self._assert(STRING)
-            selector = self._next_token().value
-            self._advance()
-
-        return FindCommand(range, level, selector)
+        return FindCommand(selector)
 
     
     def _parse_command(self) -> AST:
