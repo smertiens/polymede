@@ -1,9 +1,6 @@
-from tkinter.font import names
-
 
 class AST:
     pass
-
 
 class Query(AST):
 
@@ -11,12 +8,10 @@ class Query(AST):
         self.command = command
         self.if_clause = if_clause
 
-
 class String(AST):
 
     def __init__(self, value):
         self.value = value
-
 
 class Number(AST):
 
@@ -29,12 +24,10 @@ class Number(AST):
     def __repr__(self):
         return self.__str__()
 
-
 class ArgumentList(AST):
 
     def __init__(self):
         self.children = []
-
 
 class LoadCommand(AST):
 
@@ -44,6 +37,14 @@ class LoadCommand(AST):
 
 class FindCommand(AST):
 
-    def __init__(self, selector):
+    def __init__(self, selector, where):
         self.selector = selector
+        self.where = where
+
+class Where(AST):
+
+    def __init__(self, lval, op, rval):
+        self.lval = lval
+        self.op = op
+        self.rval = rval
 

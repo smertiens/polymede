@@ -1,5 +1,7 @@
 import logging
 
+from iniconfig import ParseError
+
 class SyntaxError(Exception):
     pass
 
@@ -159,9 +161,8 @@ class Tokenizer:
             advance = 1
 
         elif self.get_chr() == '=':
-            if self.lookahead() == '=':
-                token = Token(COMP_EQ, '==')
-                advance = 2
+            token = Token(COMP_EQ, '=')
+            advance = 1
 
         elif self.get_chr() == '<':
             if self.lookahead() == '=':
@@ -193,6 +194,9 @@ class Tokenizer:
         for _ in range(0, advance):
             self._advance()
 
+        if token is None:
+            raise ParseError('Could not determine type of token')
+
         return token
 
     def _consume_symbol(self):
@@ -208,7 +212,6 @@ class Tokenizer:
     def _consume_string(self, delim):
         val = ''
 
-        
         while self.get_chr() != delim:
             
             if self.get_chr() == '\n' or self.get_chr() is None:

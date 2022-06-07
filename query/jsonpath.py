@@ -1,4 +1,3 @@
-from nis import match
 import re
 
 class PathError(Exception):
@@ -51,6 +50,7 @@ class JSONPath:
                     end = range_match.group(2)
                     rng = [start, end]
 
+                    # TODO: move to function
                     for idx, itm in enumerate(rng):
                         
                         if itm.isnumeric():
@@ -82,6 +82,8 @@ class JSONPath:
             
             else:
                 # treat as literal key
+
+                # list indices cannot be strings
                 if type(data) == list and item.isnumeric():
                     item = int(item)
                     return self._walk_data(items[1:], data[item])

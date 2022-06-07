@@ -22,5 +22,4 @@ def test_find_all():
     
     assert runner.run_query('load "test2.json"') == {'result': True}
 
-    with open('test2.json', 'r') as fp:
-        assert runner.run_query('find all')['result'] == json.load(fp)
+    assert runner.run_query('find "*" where "*.project" = 12')

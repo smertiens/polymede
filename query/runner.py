@@ -41,25 +41,49 @@ class Runtime:
 
     def run(self, ast: Query) -> dict:
         
-        ret = {}
         result = None
 
         if isinstance(ast.command, LoadCommand):
             result = self._load(ast.command.src, ast.command.format)
         
         elif isinstance(ast.command, FindCommand):
-            result = self._find(ast.command.selector)
+            result = self._find(ast.command.selector, ast.command.where)
 
-        ret = {'result': result}
+        return result
 
-        return ret
+    def _apply_where(self, where: Where, data):
+        jp = JSONPath(where.lval, self._data)
+        lval = jp.get_result()
+        rval = where.rval
+        op = where.op
 
-    def _find(self, selector):
+        if op == '=':
+            return lval == rval
+        elif op == '<':
+            return lval < rval
+        elif op == '>':
+            return lval > rval
+        elif op == '<=':
+            return lval <= rval
+        elif op == '>=':
+            return lval >= rval
+        elif op == '!=':
+            return lval != rval
+        else:
+            raise RuntimeError("Unexpected operation.")
+
+    def _find(self, selector, where):
         filtered = None
         result = None
 
         jp = JSONPath(selector, self._data)
-        return jp.get_result()
+        result = jp.get_result()
+
+        if where is not None:
+            result = self._apply_where(where, result)
+        
+        return result
+
 
     def _load(self, src, format = 'auto'):
 

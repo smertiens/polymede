@@ -1,3 +1,4 @@
+from tkinter.messagebox import NO
 from .tokenizer import *
 from .ast import *
 
@@ -25,8 +26,31 @@ class Parser:
             raise ParserError('Expected end of query, got "%s"' % (self._next_token().type))
 
     def _assert(self, assertion):
-        if self._next_token().type != assertion:
-            raise ParserError('Expected "%s", got "%s"' % (assertion, self._next_token().type))
+        if type(assertion) == list:
+            if not self._next_token().type in assertion:
+                raise ParserError('Expected "%s", got "%s"' % (assertion, self._next_token().type))
+        
+        else:
+            if self._next_token().type != assertion:
+                raise ParserError('Expected "%s", got "%s"' % (assertion, self._next_token().type))
+
+    def _parse_where(self) -> AST:
+        lval = None
+        op = None
+        rval = None
+        
+        self._advance()
+        self._assert(STRING)
+        lval = self._next_token().value
+        self._advance()
+
+        self._assert([COMP_EQ, COMP_LT, COMP_GT, COMP_LT_EQ, COMP_GT_EQ, COMP_NOT_EQ])
+        op = self._next_token().value
+        self._advance()
+
+        rval = self._next_token().value
+
+        return Where(lval, op, rval)
         
     def _parse_command_load(self) -> AST:
 
@@ -47,13 +71,20 @@ class Parser:
         
         return LoadCommand(src, format)
 
+
     def _parse_command_find(self):
+        where = None
+        
         self._advance()
         self._assert(STRING)
         selector = self._next_token().value
-        
-        return FindCommand(selector)
 
+        self._advance()
+        
+        if self._next_token().type == R_WHERE:
+            where = self._parse_where()
+        
+        return FindCommand(selector, where)
     
     def _parse_command(self) -> AST:
 
