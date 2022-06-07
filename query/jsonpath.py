@@ -1,3 +1,4 @@
+from nis import match
 import re
 
 class PathError(Exception):
@@ -6,7 +7,11 @@ class PathError(Exception):
 class JSONPath:
 
     re_items = re.compile(r'(?P<item>\w+|\(.*\)|\*)\.*', re.IGNORECASE | re.MULTILINE)
-    
+    re_par = re.compile(r'^\(([^\(\)]*)\)$')
+    re_digit = re.compile(r'^\d+$')
+    re_range = re.compile(r'^(\w+)\-(\w+)$')
+    re_indexlist = re.compile(r'^[\d,\s]+$')
+
     def __init__(self, path: str, data: any) -> None:
         self._path = path
         self._data = data
@@ -33,11 +38,47 @@ class JSONPath:
             return result
 
         else:
-            if item in data:
-                return self._walk_data(items[1:], data[item])
+            par_match = self.re_par.match(item)
+            
+            if par_match:
+                # unpack expression
+                item = par_match.group(1)
+                
+                range_match = self.re_range.match(item)
+                if range_match:
+                    start = range_match.group(1)
+                    end = range_match.group(2)
+                    rng = [start, end]
+
+                    for idx, itm in enumerate(rng):
+                        
+                        if itm.isnumeric():
+                            rng[idx] = int(itm)
+                        else:
+                            if itm == 'first':
+                                rng[idx]  = 0
+                            elif itm == 'last':
+                                rng[idx]  = len(data) - 1
+                            else:
+                                raise PathError('Invalid selector: "%s"' % item)
+
+                    # extract range
+                    result = []
+                    for n in range(rng[0], rng[1] + 1):
+                        res = self._walk_data(items[1:], data[n])
+
+                        if res is not None:
+                            result.append(res)
+
+                return result
             
             else:
-                return None
+                # treat as literal key
+                if item in data:
+                    return self._walk_data(items[1:], data[item])
+                
+                else:
+                    return None
 
     def _split(self) -> list:
         
@@ -48,4 +89,3 @@ class JSONPath:
             items.append(match.group('item'))
         
         return items
-
