@@ -1,0 +1,14 @@
+QUERY: COMMAND (PARAMS) (IF_CLAUSE)
+
+ATOMIC: STRING | INTEGER | FLOAT
+COMMAND: "find" | "sum" | "average" 
+FIELD_SELECTOR: " (STRING(.))+ "
+IF_CLAUSE: "if" FIELD_SELECTOR COMP_OP (ATOMIC | LIST)
+COMP_OP: "is" | "contains" | "=" | ">" | "<" | ">=" | "<=" | "!=" | "is not"
+LIST: ( (ATOMIC | LIST(,))+ )
+
+
+--
+
+find (first | all | last | NUMBER) -> finds in root "[1, 2, 3, ...]"
+find ... of "demo" -> finds in root-key "{demo: [1, 2, 3]}"
