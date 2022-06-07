@@ -4,3 +4,4 @@ tests/test.json
 *.pyc
 .DS_Store
 __pycache__
+tests/__pycache__
