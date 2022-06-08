@@ -1,6 +1,10 @@
 from query import QueryRunner
-import sys, os
+import sys, os, json
 import colorama
+
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import TerminalTrueColorFormatter
 
 try:
     import readline
@@ -46,7 +50,9 @@ def main():
             # handle command
             try:
                 result = runner.run_query(query)
-                print(result)
+                formatted = json.dumps(result, indent=2)
+                highlighted = highlight(formatted, get_lexer_by_name('json'), TerminalTrueColorFormatter())
+                print(highlighted)
 
             except Exception as ex:
                 print(colorama.Fore.RED +
