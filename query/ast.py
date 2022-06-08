@@ -37,9 +37,10 @@ class LoadCommand(AST):
 
 class FindCommand(AST):
 
-    def __init__(self, selector, where):
+    def __init__(self, selector, where, fields):
         self.selector = selector
         self.where = where
+        self.fields = fields
 
 class Where(AST):
 

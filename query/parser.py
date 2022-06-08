@@ -72,20 +72,49 @@ class Parser:
         return LoadCommand(src, format)
 
 
+    def _parse_list(self):
+        self._assert(LPAR)
+        self._advance()
+
+        token = self._next_token()
+        lst = []
+
+        while token.type != RPAR:
+            if token.type == EOF:
+                raise ParseError('Unexpected end of list')
+            elif token.type == COMMA:
+                self._advance()
+            else:
+                lst.append(token.value)
+                self._advance()
+                
+            token = self._next_token()
+        
+        self._advance()     # consume RPAR
+        return lst
+
     def _parse_command_find(self):
         where = None
-        
+        fields = None
+        selector = None
+
         self._advance()
+        self._assert([STRING, LPAR])
+
+        if self._next_token().type == LPAR:
+            fields = self._parse_list()
+            self._assert(IN)
+            self._advance()
+        
         self._assert(STRING)
         selector = self._next_token().value
-
         self._advance()
 
         if not self._is_eoq():
             if self._next_token().type == R_WHERE:
                 where = self._parse_where()
             
-        return FindCommand(selector, where)
+        return FindCommand(selector, where, fields)
     
     def _parse_command(self) -> AST:
 

@@ -11,6 +11,7 @@ LPAR, RPAR, COMMA, LSQRBR, RSQRBR, NEWLINE, IF = 'LPAR', 'RPAR', 'COMMA', 'LSQRB
 COMP_EQ, COMP_LT, COMP_GT, COMP_LT_EQ, COMP_GT_EQ, COMP_NOT_EQ = 'COMP_EQ', 'COMP_LT', 'COMP_GT', 'COMP_LT_EQ', \
                                                                                                   'COMP_GT_EQ', 'COMP_NOT_EQ'
 R_AS, R_OF, R_ALL, R_FIRST, R_LAST, R_WHERE = 'R_AS', 'R_OF', 'R_ALL', 'R_FIRST', 'R_LAST', 'R_WHERE'
+IN = 'IN'
 
 class Token:
 
@@ -116,7 +117,11 @@ class Tokenizer:
 
         elif self.get_chr() == 'o' and self.lookahead() == 'f':
             token = Token(R_OF)
-            advance = 1
+            advance = 2
+        
+        elif self.get_chr() == 'i' and self.lookahead() == 'n':
+            token = Token(IN)
+            advance = 2
 
         elif self.get_chr() == 'w' and self.lookahead(4) == 'here':
             token = Token(R_WHERE)

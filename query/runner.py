@@ -1,7 +1,7 @@
 import json
 import re
 from .tokenizer import Tokenizer
-from .parser import Parser
+from .parser import Parser, ParserError
 from .ast import *
 from .jsonpath import JSONPath
 
@@ -45,7 +45,7 @@ class Runtime:
             result = self._load(ast.command.src, ast.command.format)
         
         elif isinstance(ast.command, FindCommand):
-            result = self._find(ast.command.selector, ast.command.where)
+            result = self._find(ast.command.selector, ast.command.where, ast.command.fields)
 
         return result
 
@@ -81,16 +81,33 @@ class Runtime:
 
         return final_results
 
-    def _find(self, selector, where):
+    def _find(self, selector, where, fields):
         
         result = None
 
-        jp = JSONPath(selector, self._data)
+        jp = JSONPath(selector, self._get_data())
         result = jp.get_result()
 
         if where is not None:
             result = self._apply_where(where, result)
         
+        if fields is not None:
+            field_selected_results = []
+            if type(result) is not list:
+                result = [result]
+            
+            for row in result:
+                tmp = {}
+                for field in fields:
+                    try:
+                        tmp[field] = row[field]
+                    except KeyError:
+                        raise ParserError('Unknown field "%s"' % field)
+                
+                field_selected_results.append(tmp)
+            
+            result = field_selected_results
+
         return result
 
 
