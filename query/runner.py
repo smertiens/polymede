@@ -20,8 +20,6 @@ class QueryRunner:
         tokenizer = Tokenizer()
         tokens = tokenizer.tokenize(query)
 
-        print(tokens)
-
         parser = Parser(tokens)
         ast = parser.parse()
 
@@ -52,28 +50,39 @@ class Runtime:
         return result
 
     def _apply_where(self, where: Where, data):
-        jp = JSONPath(where.lval, self._data)
-        lval = jp.get_result()
-        rval = where.rval
-        op = where.op
+        
+        final_results = []
+        for row in data:
+            jp = JSONPath(where.lval, row)
+            lval = jp.get_result()
+            rval = where.rval
+            op = where.op
 
-        if op == '=':
-            return lval == rval
-        elif op == '<':
-            return lval < rval
-        elif op == '>':
-            return lval > rval
-        elif op == '<=':
-            return lval <= rval
-        elif op == '>=':
-            return lval >= rval
-        elif op == '!=':
-            return lval != rval
-        else:
-            raise RuntimeError("Unexpected operation.")
+            if op == '=':
+                if lval == rval:
+                    final_results.append(row)
+            elif op == '<':
+                if lval < rval:
+                    final_results.append(row)
+            elif op == '>':
+                if lval > rval:
+                    final_results.append(row)
+            elif op == '<=':
+                if lval <= rval:
+                    final_results.append(row)
+            elif op == '>=':
+                if lval >= rval:
+                    final_results.append(row)
+            elif op == '!=':
+                if lval != rval:
+                    final_results.append(row)
+            else:
+                raise RuntimeError("Unexpected operation.")
+
+        return final_results
 
     def _find(self, selector, where):
-        filtered = None
+        
         result = None
 
         jp = JSONPath(selector, self._data)

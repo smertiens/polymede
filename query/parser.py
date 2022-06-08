@@ -19,7 +19,7 @@ class Parser:
         return self._tokens[self._pos]
     
     def _is_eoq(self) -> bool:
-        return self._pos != len(self._tokens) - 1
+        return self._pos >= len(self._tokens) - 1
 
     def _assert_eoq(self):
         if not self._is_eoq():
@@ -62,10 +62,10 @@ class Parser:
         self._advance()
 
         if not self._is_eoq() and self._next_token().type == R_AS:
-            self._advance
+            self._advance()
             self._assert(STRING)
             format = self._next_token().value
-            self._advance
+            self._advance()
 
         self._assert_eoq()
         
@@ -80,10 +80,11 @@ class Parser:
         selector = self._next_token().value
 
         self._advance()
-        
-        if self._next_token().type == R_WHERE:
-            where = self._parse_where()
-        
+
+        if not self._is_eoq():
+            if self._next_token().type == R_WHERE:
+                where = self._parse_where()
+            
         return FindCommand(selector, where)
     
     def _parse_command(self) -> AST:
