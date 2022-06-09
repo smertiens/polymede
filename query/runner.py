@@ -10,8 +10,12 @@ class RuntimeError(Exception):
 
 class QueryRunner:
 
-    def __init__(self) -> None:
+    def __init__(self, verbose = False) -> None:
         self.rt = Runtime()
+        self._verbose = verbose
+    
+    def load(self, fname, format='auto') -> bool:
+        return self.rt.load(fname)
 
     def run_query(self, query: str) -> dict:
         if query == '':
@@ -42,10 +46,14 @@ class Runtime:
         result = None
 
         if isinstance(ast.command, LoadCommand):
-            result = self._load(ast.command.src, ast.command.format)
+            result = self.load(ast.command.src, ast.command.format)
         
         elif isinstance(ast.command, FindCommand):
             result = self._find(ast.command.selector, ast.command.where, ast.command.fields)
+
+        elif isinstance(ast.command, CountCommand):
+            result = self._find(ast.command.selector, ast.command.where, None)
+            result = len(result)
 
         return result
 
@@ -111,7 +119,7 @@ class Runtime:
         return result
 
 
-    def _load(self, src, format = 'auto'):
+    def load(self, src, format = 'auto'):
 
         with open(src, 'r') as fp:
             self._data = json.load(fp)

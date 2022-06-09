@@ -42,6 +42,12 @@ class FindCommand(AST):
         self.where = where
         self.fields = fields
 
+class CountCommand(AST):
+
+    def __init__(self, selector, where):
+        self.selector = selector
+        self.where = where
+
 class Where(AST):
 
     def __init__(self, lval, op, rval):

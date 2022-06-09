@@ -115,6 +115,22 @@ class Parser:
                 where = self._parse_where()
             
         return FindCommand(selector, where, fields)
+
+    def _parse_command_count(self):
+        where = None
+        selector = None
+
+        self._advance()
+        
+        self._assert(STRING)
+        selector = self._next_token().value
+        self._advance()
+
+        if not self._is_eoq():
+            if self._next_token().type == R_WHERE:
+                where = self._parse_where()
+            
+        return CountCommand(selector, where)
     
     def _parse_command(self) -> AST:
 
@@ -126,6 +142,9 @@ class Parser:
 
         elif cmd == 'find':
             return self._parse_command_find()
+
+        elif cmd == 'count':
+            return self._parse_command_count()
 
         else:
             raise ParserError('Unknown command: "%s"' % cmd)
