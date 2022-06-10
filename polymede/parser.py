@@ -3,26 +3,33 @@ from polymede.ast import *
 from polymede.exceptions import ParserError
 
 class Parser:
+    """ Parses the token-list returned from the tokenizer and creates an abstract syntax tree (AST). """
 
     def __init__(self, tokens: list) -> None:
+        """ Create new parser instance """
         self._pos = 0
         self._tokens = tokens
         self._root = None
 
     def _advance(self):
+        """ Move one token forward """
         self._pos += 1
 
     def _next_token(self) -> Token:
+        """ Return the token at the current position """
         return self._tokens[self._pos]
     
     def _is_eoq(self) -> bool:
+        """ Returns true if the end-of-query is reached """
         return self._pos >= len(self._tokens) - 1
 
     def _assert_eoq(self):
+        """ Will raise an exception if the end of the query is reached """
         if not self._is_eoq():
             raise ParserError('Expected end of query, got "%s"' % (self._next_token().type))
 
     def _assert(self, assertion):
+        """ Will raise an exception if current token ist not in the given list """
         if type(assertion) == list:
             if not self._next_token().type in assertion:
                 raise ParserError('Expected "%s", got "%s"' % (assertion, self._next_token().type))
@@ -32,6 +39,7 @@ class Parser:
                 raise ParserError('Expected "%s", got "%s"' % (assertion, self._next_token().type))
 
     def _parse_where(self) -> AST:
+        """ Parse a where expression """
         lval = None
         op = None
         rval = None
@@ -50,7 +58,7 @@ class Parser:
         return Where(lval, op, rval)
         
     def _parse_command_load(self) -> AST:
-
+        """ Parse load command """
         self._advance()
         self._assert(STRING)
         src = self._next_token().value
@@ -70,6 +78,7 @@ class Parser:
 
 
     def _parse_list(self):
+        """ Parse list """
         self._assert(LPAR)
         self._advance()
 
@@ -91,6 +100,7 @@ class Parser:
         return lst
 
     def _parse_command_find(self):
+        """ Parse find command """
         where = None
         fields = None
         selector = None
@@ -114,6 +124,7 @@ class Parser:
         return FindCommand(selector, where, fields)
 
     def _parse_command_count(self):
+        """ Parse count command """
         where = None
         selector = None
 
@@ -130,7 +141,7 @@ class Parser:
         return CountCommand(selector, where)
     
     def _parse_command(self) -> AST:
-
+        """ Determine the main command for this query """
         self._assert(SYMBOL)
         cmd = self._next_token().value.lower()
 
@@ -147,7 +158,7 @@ class Parser:
             raise ParserError('Unknown command: "%s"' % cmd)
 
     def parse(self) -> AST:
-        
+        """ Start parsing """
         cmd = self._parse_command()
         if_clause = None
 

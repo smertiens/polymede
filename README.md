@@ -1,5 +1,7 @@
 # Polymede
 
+![python package](https://github.com/smertiens/polymede/actions/workflows/python-package.yml/badge.svg)
+
 A simple command-line tool to query data from JSON files.
 
 ## Installation

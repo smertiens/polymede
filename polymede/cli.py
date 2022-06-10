@@ -8,15 +8,12 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import TerminalTrueColorFormatter
 
-DEBUG = True
-
 try:
     import readline
 except ImportError:
     pass
 
 historyPath = os.path.join(os.path.expanduser('~'), '.json_query.history')
-
 
 @click.command()
 @click.argument('query', required=False)
@@ -36,9 +33,6 @@ def main(query, load, format, silent, verbose, ugly, no_highlighting):
             'Error while executing query (%s): %s' % (type(ex).__name__, ex.__str__()) +
             colorama.Fore.RESET
             )
-
-        if DEBUG:
-            raise ex
 
     def end():
         if readline:
@@ -73,11 +67,11 @@ def main(query, load, format, silent, verbose, ugly, no_highlighting):
 
     colorama.init()
 
-    # if readline:
-    #     try:
-    #         readline.read_history_file(historyPath)
-    #     except FileNotFoundError:
-    #         pass
+    if readline:
+        try:
+            readline.read_history_file(historyPath)
+        except FileNotFoundError:
+            pass
 
     runner = QueryRunner(verbose=verbose)
     

@@ -2,6 +2,7 @@ import re
 from polymede.exceptions import PathError
 
 class JSONPath:
+    """Traverses JSON data with using a path string"""
 
     re_items = re.compile(r'(?P<item>\w+|\(.*\)|\*)\.*', re.IGNORECASE | re.MULTILINE)
     re_par = re.compile(r'^\(([^\(\)]*)\)$')
@@ -10,14 +11,26 @@ class JSONPath:
     re_indexlist = re.compile(r'^[\d,\s]+$')
 
     def __init__(self, path: str, data: any) -> None:
+        """ Create a new instance
+
+        path -- Path string
+        data -- JSON data (as Python object)
+        """
         self._path = path
         self._data = data
     
     def get_result(self):
+        """ Return the data the pathstring points at or None """
         items = self._split()
         return self._walk_data(items, self._data)
 
     def _walk_data(self, items: list, data):
+        """Walk the JSON data recursively until the complete pathstring is processed
+
+        items -- List of pathstring items (returned from self._split())
+        data -- JSON data of the current level
+        """
+
         if len(items) == 0:
             return data
 
@@ -71,11 +84,11 @@ class JSONPath:
 
                 
                 else:
+                    # overwrite with the same item without parentheses
+                    items[0] = item 
                     # try again to match as literal key (without parentheses)
-                    items[0] = item # overwrite with the same item without parentheses
                     result = self._walk_data(items, data)
                     
-
                 return result
             
             else:
@@ -93,7 +106,7 @@ class JSONPath:
                     return None
 
     def _split(self) -> list:
-        
+        """ Splits the pathstring into seperate components using '.' as the delimiter. """
         matches = self.re_items.finditer(self._path)
         items = []
         

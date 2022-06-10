@@ -1,10 +1,8 @@
-
 class RuntimeError(Exception):
     pass
 
 class SyntaxError(Exception):
     pass
-
 
 class ParserError(Exception):
     pass

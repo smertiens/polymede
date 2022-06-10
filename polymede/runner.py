@@ -6,6 +6,7 @@ from polymede.jsonpath import JSONPath
 from polymede.exceptions import RuntimeError
 
 class QueryRunner:
+    """ Serves as the frontend to the query engine """
 
     def __init__(self, verbose = False) -> None:
         self.rt = Runtime()
@@ -28,18 +29,22 @@ class QueryRunner:
 
 
 class Runtime:
-
+    """ Executes the AST returned from the parsing step """
     def __init__(self) -> None:
         self._data = None
     
     def _get_data(self):
+        """Return the data that was loaded using the LOAD command.
+            The data property should not be used directly so we can raise an exception 
+            if no data has been loaded.
+        """
         if self._data is None:
             raise RuntimeError('There is no data loaded. Load data with "load".')
         else:
             return self._data
 
     def run(self, ast: Query) -> dict:
-        
+        """ Run the Query tree """
         result = None
 
         if isinstance(ast.command, LoadCommand):
@@ -55,7 +60,7 @@ class Runtime:
         return result
 
     def _apply_where(self, where: Where, data):
-        
+        """ Filter the given results through the WHERE expressions """        
         final_results = []
         for row in data:
             jp = JSONPath(where.lval, row)
@@ -91,7 +96,7 @@ class Runtime:
         return final_results
 
     def _find(self, selector, where, fields):
-        
+        """ Find command """
         result = None
 
         jp = JSONPath(selector, self._get_data())
@@ -121,7 +126,7 @@ class Runtime:
 
 
     def load(self, src, format = 'auto'):
-
+        """ Load data into memory """
         with open(src, 'r') as fp:
             self._data = json.load(fp)
 
