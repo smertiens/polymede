@@ -17,7 +17,7 @@ except ImportError:
 
 historyPath = os.path.join(os.path.expanduser('~'), '.json_query.history')
 
-# TODO: add tests for cli
+
 @click.command()
 @click.argument('query', required=False)
 @click.option('--load', default="", type=str, help="Load the given file name")
@@ -70,13 +70,14 @@ def main(query, load, format, silent, verbose, ugly, no_highlighting):
         else:
             output(formatted)
 
+
     colorama.init()
 
-    if readline:
-        try:
-            readline.read_history_file(historyPath)
-        except FileNotFoundError:
-            pass
+    # if readline:
+    #     try:
+    #         readline.read_history_file(historyPath)
+    #     except FileNotFoundError:
+    #         pass
 
     runner = QueryRunner(verbose=verbose)
     

@@ -50,7 +50,7 @@ class JSONPath:
                     end = range_match.group(2)
                     rng = [start, end]
 
-                    # TODO: move to function
+                    # TODO: move symbol resolve to function
                     for idx, itm in enumerate(rng):
                         
                         if itm.isnumeric():
