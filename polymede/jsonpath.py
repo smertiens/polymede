@@ -1,7 +1,5 @@
 import re
-
-class PathError(Exception):
-    pass
+from polymede.exceptions import PathError
 
 class JSONPath:
 

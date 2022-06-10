@@ -3,9 +3,7 @@ from polymede.tokenizer import Tokenizer
 from polymede.parser import Parser, ParserError
 from polymede.ast import *
 from polymede.jsonpath import JSONPath
-
-class RuntimeError(Exception):
-    pass
+from polymede.exceptions import RuntimeError
 
 class QueryRunner:
 

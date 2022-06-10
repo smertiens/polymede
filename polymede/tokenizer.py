@@ -1,8 +1,5 @@
-from polymede.parser import ParserError
+from polymede.exceptions import ParserError
 import logging
-
-class SyntaxError(Exception):
-    pass
 
 # Tokens
 STRING, INTEGER, LIST, SYMBOL, EOF = 'STRING', 'INTEGER', 'LIST', 'SYMBOL', 'EOF',

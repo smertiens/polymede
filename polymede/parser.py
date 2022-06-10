@@ -1,8 +1,6 @@
 from polymede.tokenizer import *
 from polymede.ast import *
-
-class ParserError(Exception):
-    pass
+from polymede.exceptions import ParserError
 
 class Parser:
 
