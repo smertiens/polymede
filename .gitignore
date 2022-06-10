@@ -5,3 +5,6 @@ tests/test.json
 .DS_Store
 __pycache__
 tests/__pycache__
+dist
+*.egg-info
+build

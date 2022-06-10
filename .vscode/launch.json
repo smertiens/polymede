@@ -8,7 +8,7 @@
       "name": "CLI Debug",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/cli.py",
+      "program": "${workspaceFolder}/jsonquery/cli.py",
       "console": "integratedTerminal",
       "justMyCode": true
     }

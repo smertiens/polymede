@@ -1,4 +1,5 @@
-from query import QueryRunner
+import polymede
+from polymede.runner import QueryRunner
 import sys, os, json
 import colorama
 import click
@@ -17,7 +18,7 @@ except ImportError:
 historyPath = os.path.join(os.path.expanduser('~'), '.json_query.history')
 
 # TODO: add tests for cli
-@click.command
+@click.command()
 @click.argument('query', required=False)
 @click.option('--load', default="", type=str, help="Load the given file name")
 @click.option('--format', default="auto", type=str, help="Set the file type when using load (defaults to 'auto')")
@@ -97,7 +98,7 @@ def main(query, load, format, silent, verbose, ugly, no_highlighting):
             sys.exit(1)
 
     # Start interactive mode
-    output('json-query')
+    output('Welcome to Polymede {}!'.format(polymede.VERSION))
 
     while True:
         try:

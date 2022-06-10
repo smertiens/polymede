@@ -15,6 +15,7 @@
 
 stages:          # List of stages for jobs, and their order of execution
   - test
+  - dist
 
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
@@ -25,3 +26,10 @@ unit-test-job:   # This job runs in the test stage.
     - pip install -r requirements.txt 
     - pip install pytest
     - pytest tests
+
+dist:
+  stage: dist
+  script:
+    - pip3 install setuptools build
+    - python3 -m build
+

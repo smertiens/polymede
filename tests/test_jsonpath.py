@@ -1,10 +1,6 @@
-import json
-import os, sys
 import pytest
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/..'))
 
-from query import JSONPath
-from query import PathError
+from polymede.jsonpath import JSONPath, PathError
 
 def test_basic():
 

@@ -1,6 +1,5 @@
+from parser import ParserError
 import logging
-
-from iniconfig import ParseError
 
 class SyntaxError(Exception):
     pass
@@ -200,7 +199,7 @@ class Tokenizer:
             self._advance()
 
         if token is None:
-            raise ParseError('Could not determine type of token')
+            raise ParserError('Could not determine type of token')
 
         return token
 

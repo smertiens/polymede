@@ -1,6 +1,5 @@
-from tkinter.messagebox import NO
-from .tokenizer import *
-from .ast import *
+from polymede.tokenizer import *
+from polymede.ast import *
 
 class ParserError(Exception):
     pass
@@ -81,7 +80,7 @@ class Parser:
 
         while token.type != RPAR:
             if token.type == EOF:
-                raise ParseError('Unexpected end of list')
+                raise ParserError('Unexpected end of list')
             elif token.type == COMMA:
                 self._advance()
             else:

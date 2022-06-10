@@ -1,9 +1,8 @@
 import json
-import re
-from .tokenizer import Tokenizer
-from .parser import Parser, ParserError
-from .ast import *
-from .jsonpath import JSONPath
+from polymede.tokenizer import Tokenizer
+from polymede.parser import Parser, ParserError
+from polymede.ast import *
+from polymede.jsonpath import JSONPath
 
 class RuntimeError(Exception):
     pass
@@ -65,6 +64,10 @@ class Runtime:
             lval = jp.get_result()
             rval = where.rval
             op = where.op
+
+            if lval is None:
+                # If path does not exist in this row it will be skipped
+                continue
 
             if op == '=':
                 if lval == rval:
