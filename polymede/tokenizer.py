@@ -1,4 +1,4 @@
-from parser import ParserError
+from polymede.parser import ParserError
 import logging
 
 class SyntaxError(Exception):
