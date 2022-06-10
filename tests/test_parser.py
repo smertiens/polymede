@@ -1,5 +1,7 @@
 import json
+import pytest
 from polymede.runner import QueryRunner
+from polymede.parser import ParserError
 
 def test_load_basic():
     runner = QueryRunner()
@@ -51,3 +53,19 @@ def test_find_where_fields(testdata_path):
     with open('%s/test.json' % testdata_path) as fp:
         d = json.load(fp)
         assert res[0] == { "size": d['projects'][0]['meta']['size'] }
+
+def test_count(testdata_path):
+    runner = QueryRunner()
+    assert runner.run_query('load "%s/data_wuppertal.json"' % testdata_path) == True
+    assert runner.run_query('count "fields"') == 18
+    assert runner.run_query('count "features"') == 9985
+    assert runner.run_query('count "features" where "attributes.Geschlecht" = "M"') == 4745
+    assert runner.run_query('count "features" where "attributes.Geschlecht" = "W"') == 5039
+    assert runner.run_query('count "features" where "attributes.Geschlecht" = "unbekannt"') == 201
+
+def test_fail_on_unknown_command():
+    runner = QueryRunner()
+    
+    with pytest.raises(ParserError) as ex:
+        runner.run_query('dont know')
+        assert 'Unknown command' in ex.__str__()

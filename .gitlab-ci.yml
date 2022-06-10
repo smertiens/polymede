@@ -24,7 +24,7 @@ unit-test-job:   # This job runs in the test stage.
     - source .venv/bin/activate
     - pip --version
     - pip install -r requirements.txt 
-    - pip install pytest
+    - pip install pytest pytest-cov
     - pytest tests
 
 dist:
