@@ -69,3 +69,20 @@ def test_fail_on_unknown_command():
     with pytest.raises(ParserError) as ex:
         runner.run_query('dont know')
         assert 'Unknown command' in ex.__str__()
+
+def test_sort(testdata_path):
+    runner = QueryRunner()
+    assert runner.run_query('load "%s/test_sort.json"' % testdata_path) == True
+    assert runner.run_query('find "names.*"') == ["Peter", "Mary", "Angus", "Roland", "Zelda", "Ingrid"]
+    assert runner.run_query('find "names.*" sort("asc")') == sorted(["Peter", "Mary", "Angus", "Roland", "Zelda", "Ingrid"])
+    assert runner.run_query('find "names.*" sort("desc")') == sorted(["Peter", "Mary", "Angus", "Roland", "Zelda", "Ingrid"], reverse=True)
+
+def test_sortBy(testdata_path):
+    runner = QueryRunner()
+    assert runner.run_query('load "%s/test_sort.json"' % testdata_path) == True
+
+    with open('%s/test_sort.json' % testdata_path, 'r') as fp:
+        obj = json.load(fp)
+        assert runner.run_query('find "nested"') == obj['nested']
+        assert runner.run_query('find "nested" sortBy("name", "asc")') == \
+            sorted(obj['nested'], key=lambda k: k['name'])

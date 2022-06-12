@@ -38,10 +38,11 @@ class LoadCommand(AST):
 
 class FindCommand(AST):
     """ Find command """
-    def __init__(self, selector, where, fields):
+    def __init__(self, selector, where, fields, sortBy):
         self.selector = selector
         self.where = where
         self.fields = fields
+        self.sortBy = sortBy
 
 class CountCommand(AST):
     """ Count command """
@@ -55,3 +56,16 @@ class Where(AST):
         self.lval = lval
         self.op = op
         self.rval = rval
+
+class sortBy(AST):
+    """ A sortBy expression """
+
+    def __init__(self, field, direction):
+        self.field = field
+        self.direction = direction
+
+class sort(AST):
+    """ A sort expression """
+
+    def __init__(self, direction):
+        self.direction = direction

@@ -1,0 +1,28 @@
+{
+  "names":[
+    "Peter",
+    "Mary",
+    "Angus",
+    "Roland",
+    "Zelda",
+    "Ingrid"
+  ],
+  "meta": {
+    "years": [
+      2020,
+      1987,
+      2004,
+      1967,
+      1993,
+      1996
+    ]
+  },
+  "nested": [
+    {"name": "Peter"},
+    {"name": "Mary"},
+    {"name": "Angus"},
+    {"name": "Roland"},
+    {"name": "Zelda"},
+    {"name": "Ingrid"}
+  ]  
+}

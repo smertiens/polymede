@@ -3,14 +3,14 @@ import logging
 
 # Tokens
 STRING, INTEGER, LIST, SYMBOL, EOF = 'STRING', 'INTEGER', 'LIST', 'SYMBOL', 'EOF',
-LPAR, RPAR, COMMA, LSQRBR, RSQRBR, NEWLINE, IF = 'LPAR', 'RPAR', 'COMMA', 'LSQRBR', 'RSQRBR', 'NEWLINE', 'IF'
+LPAR, RPAR, COMMA, LSQRBR, RSQRBR, NEWLINE = 'LPAR', 'RPAR', 'COMMA', 'LSQRBR', 'RSQRBR', 'NEWLINE'
 COMP_EQ, COMP_LT, COMP_GT, COMP_LT_EQ, COMP_GT_EQ, COMP_NOT_EQ = 'COMP_EQ', 'COMP_LT', 'COMP_GT', 'COMP_LT_EQ', \
-                                                                                                  'COMP_GT_EQ', 'COMP_NOT_EQ'
-R_AS, R_OF, R_ALL, R_FIRST, R_LAST, R_WHERE = 'R_AS', 'R_OF', 'R_ALL', 'R_FIRST', 'R_LAST', 'R_WHERE'
-IN = 'IN'
+                                                                'COMP_GT_EQ', 'COMP_NOT_EQ'
+R_FIRST, R_LAST,  = 'R_FIRST', 'R_LAST'
+IN, WHERE, AS = 'IN', 'WHERE', 'AS'
 
 class Token:
-
+    
     type: str = None
     value: any = None
 
@@ -96,12 +96,8 @@ class Tokenizer:
             return Token(EOF)
         
         if self.get_chr() == 'a' and self.lookahead() == 's':
-            token = Token(R_AS)
+            token = Token(AS)
             advance = 2
-
-        elif self.get_chr() == 'a' and self.lookahead(2) == 'll':
-            token = Token(R_ALL)
-            advance = 3
 
         elif self.get_chr() == 'f' and self.lookahead(4) == 'irst':
             token = Token(R_FIRST)
@@ -111,16 +107,12 @@ class Tokenizer:
             token = Token(R_LAST)
             advance = 4
 
-        elif self.get_chr() == 'o' and self.lookahead() == 'f':
-            token = Token(R_OF)
-            advance = 2
-        
         elif self.get_chr() == 'i' and self.lookahead() == 'n':
             token = Token(IN)
             advance = 2
 
         elif self.get_chr() == 'w' and self.lookahead(4) == 'here':
-            token = Token(R_WHERE)
+            token = Token(WHERE)
             advance = 5
 
         elif self.get_chr().isalpha() or self.get_chr() == '_':

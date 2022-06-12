@@ -1,4 +1,6 @@
 import json
+from this import d
+from tkinter import N
 from polymede.tokenizer import Tokenizer
 from polymede.parser import Parser, ParserError
 from polymede.ast import *
@@ -51,10 +53,10 @@ class Runtime:
             result = self.load(ast.command.src, ast.command.format)
         
         elif isinstance(ast.command, FindCommand):
-            result = self._find(ast.command.selector, ast.command.where, ast.command.fields)
+            result = self._find(ast.command)
 
         elif isinstance(ast.command, CountCommand):
-            result = self._find(ast.command.selector, ast.command.where, None)
+            result = self._find(ast.command)
             result = len(result)
 
         return result
@@ -95,35 +97,55 @@ class Runtime:
 
         return final_results
 
-    def _find(self, selector, where, fields):
+    def _find(self, ast: AST):
         """ Find command """
         result = None
 
-        jp = JSONPath(selector, self._get_data())
+        jp = JSONPath(ast.selector, self._get_data())
         result = jp.get_result()
 
-        if where is not None:
-            result = self._apply_where(where, result)
+        if ast.where is not None:
+            result = self._apply_where(ast.where, result)
         
-        if fields is not None:
-            field_selected_results = []
-            if type(result) is not list:
-                result = [result]
-            
-            for row in result:
-                tmp = {}
-                for field in fields:
-                    try:
-                        tmp[field] = row[field]
-                    except KeyError:
-                        raise ParserError('Unknown field "%s"' % field)
+        # since COUNT command is also processed here we have to check which node we are 
+        # looking at right now
+        if isinstance(ast, FindCommand): 
+            if ast.fields is not None:
+                field_selected_results = []
+                if type(result) is not list:
+                    result = [result]
                 
-                field_selected_results.append(tmp)
+                for row in result:
+                    tmp = {}
+                    for field in ast.fields:
+                        try:
+                            tmp[field] = row[field]
+                        except KeyError:
+                            raise ParserError('Unknown field "%s"' % field)
+                    
+                    field_selected_results.append(tmp)
+                
+                result = field_selected_results
             
-            result = field_selected_results
+            if ast.sortBy is not None:
+                if isinstance(ast.sortBy, sort):
+                    result = self._sort(ast.sortBy, result)
+
+                elif isinstance(ast.sortBy, sortBy):
+                    result = self._sortBy(ast.sortBy, result)
 
         return result
 
+    def _sort(self, sort: sort, data):
+        """ Processes a sort-Node by sorting a list in the given direction and returning it """
+        return sorted(data, reverse = (True if sort.direction == "desc" else False))
+            
+
+    def _sortBy(self, sortBy: sortBy, data):
+        """ Processes a sortBy-Node by sorting a nested list in the given direction and returning it """
+        return sorted(data, key=lambda item: item[sortBy.field],
+                reverse = (True if sortBy.direction == "desc" else False)
+            )
 
     def load(self, src, format = 'auto'):
         """ Load data into memory """

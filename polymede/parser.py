@@ -66,7 +66,7 @@ class Parser:
 
         self._advance()
 
-        if not self._is_eoq() and self._next_token().type == R_AS:
+        if not self._is_eoq() and self._next_token().type == AS:
             self._advance()
             self._assert(STRING)
             format = self._next_token().value
@@ -104,6 +104,7 @@ class Parser:
         where = None
         fields = None
         selector = None
+        sortBy = None
 
         self._advance()
         self._assert([STRING, LPAR])
@@ -118,10 +119,40 @@ class Parser:
         self._advance()
 
         if not self._is_eoq():
-            if self._next_token().type == R_WHERE:
+            if self._next_token().type == WHERE:
                 where = self._parse_where()
+                self._advance()
+
+        if not self._is_eoq():
+            if self._next_token().type == SYMBOL and self._next_token().value.lower()in  ('sortby', 'sort'):
+                sortBy = self._parse_sort_expression()
             
-        return FindCommand(selector, where, fields)
+        return FindCommand(selector, where, fields, sortBy)
+
+    def _parse_sort_expression(self):
+        arg1 = None
+        arg2 = None
+
+        self._advance()
+        self._assert(LPAR)
+        self._advance()
+        self._assert([STRING, SYMBOL])
+
+        arg1 = self._next_token().value
+        self._advance()
+        self._assert([COMMA, RPAR])
+
+        if self._next_token().type == COMMA:
+            # two arguments -> sortBy 
+            self._advance()
+            self._assert([STRING, SYMBOL])
+            arg2 = self._next_token().value
+            self._advance()
+            return sortBy(arg1, arg2)
+
+        else:
+            # one argument -> sort
+            return sort(arg1)
 
     def _parse_command_count(self):
         """ Parse count command """
@@ -135,7 +166,7 @@ class Parser:
         self._advance()
 
         if not self._is_eoq():
-            if self._next_token().type == R_WHERE:
+            if self._next_token().type == WHERE:
                 where = self._parse_where()
             
         return CountCommand(selector, where)
